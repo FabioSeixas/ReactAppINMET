@@ -29,7 +29,9 @@
         "prettier"
     ],
     "rules": {
+      "no-extend-native": "off",
       "react-hooks/rules-of-hooks": "error",
+      "no-use-before-define": "off",
       "prettier/prettier": "error",
       "react-hooks/exhaustive-deps": "warn",
       "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
