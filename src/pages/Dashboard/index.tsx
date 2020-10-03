@@ -16,13 +16,6 @@ const Dashboard: React.FC = () => {
   const [inputCity, setInputCity] = useState('');
   const [inputError, setInputError] = useState('');
   const [stationsList, setStationsList] = useState<Station[]>([]);
-  const [stationsRender, setStationsRender] = useState<Station[]>([]);
-
-  useEffect(() => {
-    console.log('stationsList: ', stationsList);
-    // const popItem: Station = stationsList.pop() as Station;
-    // setStationsRender([...stationsRender, popItem]);
-  }, [stationsList]);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
@@ -42,9 +35,8 @@ const Dashboard: React.FC = () => {
     const stationFound = response.filter(
       (station: Station) => station.DC_NOME === inputCity.toUpperCase(),
     );
-    stationFound.forEach(element =>
-      setStationsList([...stationsList, element]),
-    );
+
+    setStationsList([...stationsList, ...stationFound]);
   }
 
   return (
