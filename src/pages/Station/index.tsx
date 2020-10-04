@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useTable } from 'react-table';
 
+import TableContainer from '../../components/TableContainer/index';
 import api from '../../services/api';
 
 interface StationParams {
@@ -9,24 +9,25 @@ interface StationParams {
   type: string;
 }
 
-interface ConvStationData {
+interface StationData {
   DT_MEDICAO: string;
   HR_MEDICAO: string;
   TEMP_MIN: string;
   TEMP_MAX: string;
 }
 
-interface AutoStationData {
-  DT_MEDICAO: string;
-  HR_MEDICAO: string;
-  TEM_MIN: string;
-  TEM_MAX: string;
-}
+// interface AutoStationData {
+//   DT_MEDICAO: string;
+//   HR_MEDICAO: string;
+//   TEM_MIN: string;
+//   TEM_MAX: string;
+// }
 
 const Station: React.FC = () => {
   const { params } = useRouteMatch<StationParams>();
-  const [convStationData, setConvStationData] = useState<ConvStationData[]>([]);
-  const [autoStationData, setAutoStationData] = useState<AutoStationData[]>([]);
+  const [stationData, setStationData] = useState<StationData[]>([]);
+  const [NetError, setNetError] = useState('');
+  // const [autoStationData, setAutoStationData] = useState<AutoStationData[]>([]);
 
   const getCurrentDate = () => {
     const date = new Date();
@@ -50,63 +51,62 @@ const Station: React.FC = () => {
   useEffect(() => {
     const { firstDate, lastDate } = getCurrentDate();
 
-    api
-      .get(`estacao/${firstDate}/${lastDate}/${params.code}`)
-      .then(response => {
-        if (params.type === 'Convencional') {
-          setConvStationData(response.data);
-        } else {
-          setAutoStationData(response.data);
-        }
-      });
+    try {
+      api
+        .get(`estacao/${firstDate}/${lastDate}/${params.code}`)
+        .then(response => {
+          setStationData(response.data);
+          console.log(response.data);
+          // if (params.type === 'Convencional') {
+          //   setConvStationData(response.data);
+          // } else {
+          //   setAutoStationData(response.data);
+          // }
+        });
+    } catch (err) {
+      setNetError('Falha na Requisição à API do INMET');
+    }
   }, [params.code]);
 
-  useEffect(() => {
-    if (params.type === 'Convencional') {
-      const data = React.useMemo(() => convStationData, []);
-      const tableInstance = useTable({ columns, data });
-    }
-
-    const {
-      getTableProps,
-      getTableBodyProps,
-      headerGroups,
-      rows,
-      prepareRow,
-    } = tableInstance;
-  }, [convStationData, autoStationData]);
-
-  const data = React.useMemo(
+  const autoColumns = React.useMemo(
     () => [
-      { firstName: 'jane', lastName: 'doe', age: 20 },
-      { firstName: 'john', lastName: 'smith', age: 21 },
+      {
+        Header: 'Data de Medição',
+        accessor: 'DT_MEDICAO',
+      },
+      {
+        Header: 'Hora de Medição',
+        accessor: 'HR_MEDICAO',
+      },
+      {
+        Header: 'Temperatura Mínima',
+        accessor: 'TEM_MIN',
+      },
+      {
+        Header: 'Temperatura Máxima',
+        accessor: 'TEM_MAX',
+      },
     ],
     [],
   );
 
-  const columns = React.useMemo(
+  const convColumns = React.useMemo(
     () => [
       {
-        Header: 'Name',
-        columns: [
-          {
-            Header: 'First Name',
-            accessor: 'firstName',
-          },
-          {
-            Header: 'Last Name',
-            accessor: 'lastName',
-          },
-        ],
+        Header: 'Data de Medição',
+        accessor: 'DT_MEDICAO',
       },
       {
-        Header: 'Other Info',
-        columns: [
-          {
-            Header: 'Age',
-            accessor: 'age',
-          },
-        ],
+        Header: 'Hora de Medição',
+        accessor: 'HR_MEDICAO',
+      },
+      {
+        Header: 'Temperatura Mínima',
+        accessor: 'TEMP_MIN',
+      },
+      {
+        Header: 'Temperatura Máxima',
+        accessor: 'TEMP_MAX',
       },
     ],
     [],
@@ -115,31 +115,11 @@ const Station: React.FC = () => {
   return (
     <>
       <h1>Estação Automatica de Cruz das Almas</h1>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <TableContainer
+        columns={params.type === 'Convencional' ? convColumns : autoColumns}
+        data={stationData}
+      />
+      {NetError && <h3>NetError</h3>}
     </>
   );
 };
