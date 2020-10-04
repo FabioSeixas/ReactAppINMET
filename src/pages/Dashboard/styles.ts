@@ -43,17 +43,23 @@ export const Form = styled.form`
 `;
 
 export const StationsList = styled.div`
-  margin-top: 70px;
+  margin-top: 50px;
   max-width: 400px;
 
   a {
     width: 100%;
     background: #fff;
     text-decoration: none;
+    border: 1px solid;
+    border-radius: 10px;
     color: #2d3047;
     display: block;
     padding: 12px;
     transition: transform 0.2s;
+
+    & + a {
+      margin-top: 8px;
+    }
 
     &:hover {
       transform: translateX(10px);
@@ -69,4 +75,13 @@ export const StationsList = styled.div`
   }
 `;
 
-export const Error = styled.span``;
+export const Error = styled.div`
+  height: 40px;
+  display: flex;
+  align-items: center;
+
+  span {
+    color: #c53030;
+    margin-left: 5px;
+  }
+`;

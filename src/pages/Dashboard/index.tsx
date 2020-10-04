@@ -15,7 +15,18 @@ interface Station {
 const Dashboard: React.FC = () => {
   const [inputCity, setInputCity] = useState('');
   const [inputError, setInputError] = useState('');
-  const [stationsList, setStationsList] = useState<Station[]>([]);
+  const [stationsList, setStationsList] = useState<Station[]>(() => {
+    const stationsStorage = localStorage.getItem('@inmetAPI');
+
+    if (stationsStorage) {
+      return JSON.parse(stationsStorage);
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('@inmetAPI', JSON.stringify(stationsList));
+  }, [stationsList]);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
@@ -25,6 +36,7 @@ const Dashboard: React.FC = () => {
 
     if (!inputCity) {
       setInputError('Digite o nome de uma cidade.');
+      return;
     }
 
     const conv = await api.get('estacoes/M');
@@ -36,7 +48,13 @@ const Dashboard: React.FC = () => {
       (station: Station) => station.DC_NOME === inputCity.toUpperCase(),
     );
 
+    if (!stationFound.length) {
+      setInputError('Cidade não encontrada.');
+      setInputCity('');
+    }
+
     setStationsList([...stationsList, ...stationFound]);
+    setInputCity('');
   }
 
   return (
@@ -50,7 +68,7 @@ const Dashboard: React.FC = () => {
         />
         <button type="submit">Pesquisar</button>
       </Form>
-      {inputError && <Error>{inputError}</Error>}
+      <Error>{inputError ? <span>{inputError}</span> : ' '}</Error>
 
       <StationsList>
         {stationsList.map(station => (
