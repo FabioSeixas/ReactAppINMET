@@ -1,4 +1,5 @@
 import React, { useState, FormEvent, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Title, Form, StationsList, Error } from './styles';
 
@@ -53,7 +54,7 @@ const Dashboard: React.FC = () => {
       setInputCity('');
     }
 
-    setStationsList([...stationsList, ...stationFound]);
+    setStationsList([...stationFound, ...stationsList]);
     setInputCity('');
   }
 
@@ -72,12 +73,12 @@ const Dashboard: React.FC = () => {
 
       <StationsList>
         {stationsList.map(station => (
-          <a key={station.CD_ESTACAO} href="asdgfasdf">
+          <Link key={station.CD_ESTACAO} to={`station/${station.CD_ESTACAO}`}>
             <strong>{`Nome: ${station.DC_NOME}`}</strong>
             <p>{`Estado: ${station.SG_ESTADO}`}</p>
             <p>{`Tipo: ${station.TP_ESTACAO}`}</p>
             <p>{`Situação: ${station.CD_SITUACAO}`}</p>
-          </a>
+          </Link>
         ))}
       </StationsList>
     </>
