@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useTable } from 'react-table';
 
@@ -6,10 +6,27 @@ import api from '../../services/api';
 
 interface StationParams {
   code: string;
+  type: string;
+}
+
+interface ConvStationData {
+  DT_MEDICAO: string;
+  HR_MEDICAO: string;
+  TEMP_MIN: string;
+  TEMP_MAX: string;
+}
+
+interface AutoStationData {
+  DT_MEDICAO: string;
+  HR_MEDICAO: string;
+  TEM_MIN: string;
+  TEM_MAX: string;
 }
 
 const Station: React.FC = () => {
   const { params } = useRouteMatch<StationParams>();
+  const [convStationData, setConvStationData] = useState<ConvStationData[]>([]);
+  const [autoStationData, setAutoStationData] = useState<AutoStationData[]>([]);
 
   const getCurrentDate = () => {
     const date = new Date();
@@ -35,8 +52,29 @@ const Station: React.FC = () => {
 
     api
       .get(`estacao/${firstDate}/${lastDate}/${params.code}`)
-      .then(response => console.log(response.data));
+      .then(response => {
+        if (params.type === 'Convencional') {
+          setConvStationData(response.data);
+        } else {
+          setAutoStationData(response.data);
+        }
+      });
   }, [params.code]);
+
+  useEffect(() => {
+    if (params.type === 'Convencional') {
+      const data = React.useMemo(() => convStationData, []);
+      const tableInstance = useTable({ columns, data });
+    }
+
+    const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+    } = tableInstance;
+  }, [convStationData, autoStationData]);
 
   const data = React.useMemo(
     () => [
@@ -73,16 +111,6 @@ const Station: React.FC = () => {
     ],
     [],
   );
-
-  const tableInstance = useTable({ columns, data });
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = tableInstance;
 
   return (
     <>
