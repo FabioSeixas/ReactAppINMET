@@ -7,7 +7,7 @@ import Station from '../pages/Station';
 const Routes: React.FC = () => (
   <Switch>
     <Route path="/" exact component={Dashboard} />
-    <Route path="/station/:type/:code" component={Station} />
+    <Route path="/station/:type/:code/:name" component={Station} />
   </Switch>
 );
 

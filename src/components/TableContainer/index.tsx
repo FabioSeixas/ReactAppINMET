@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTable, Column } from 'react-table';
+import { Table } from 'reactstrap';
 
 interface ParamsDTO {
   columns: Column[];
@@ -19,7 +20,7 @@ const TableContainer = ({ columns, data }: ParamsDTO) => { // eslint-disable-lin
   });
 
   return (
-    <table {...getTableProps()}>
+    <Table bordered hover {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -42,7 +43,7 @@ const TableContainer = ({ columns, data }: ParamsDTO) => { // eslint-disable-lin
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
 };
 

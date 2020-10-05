@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
         {stationsList.map(station => (
           <Link
             key={station.CD_ESTACAO}
-            to={`station/${station.TP_ESTACAO}/${station.CD_ESTACAO}`}
+            to={`station/${station.TP_ESTACAO}/${station.CD_ESTACAO}/${station.DC_NOME}`}
           >
             <strong>{`Nome: ${station.DC_NOME}`}</strong>
             <p>{`Estado: ${station.SG_ESTADO}`}</p>

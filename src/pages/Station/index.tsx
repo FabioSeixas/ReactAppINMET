@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import { Container } from 'reactstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { Title } from './styles';
 import TableContainer from '../../components/TableContainer/index';
 import api from '../../services/api';
 
 interface StationParams {
   code: string;
   type: string;
+  name: string;
 }
 
 interface StationData {
@@ -16,18 +20,9 @@ interface StationData {
   TEMP_MAX: string;
 }
 
-// interface AutoStationData {
-//   DT_MEDICAO: string;
-//   HR_MEDICAO: string;
-//   TEM_MIN: string;
-//   TEM_MAX: string;
-// }
-
 const Station: React.FC = () => {
   const { params } = useRouteMatch<StationParams>();
   const [stationData, setStationData] = useState<StationData[]>([]);
-  const [NetError, setNetError] = useState('');
-  // const [autoStationData, setAutoStationData] = useState<AutoStationData[]>([]);
 
   const getCurrentDate = () => {
     const date = new Date();
@@ -51,21 +46,11 @@ const Station: React.FC = () => {
   useEffect(() => {
     const { firstDate, lastDate } = getCurrentDate();
 
-    try {
-      api
-        .get(`estacao/${firstDate}/${lastDate}/${params.code}`)
-        .then(response => {
-          setStationData(response.data);
-          console.log(response.data);
-          // if (params.type === 'Convencional') {
-          //   setConvStationData(response.data);
-          // } else {
-          //   setAutoStationData(response.data);
-          // }
-        });
-    } catch (err) {
-      setNetError('Falha na Requisição à API do INMET');
-    }
+    api
+      .get(`estacao/${firstDate}/${lastDate}/${params.code}`)
+      .then(response => {
+        setStationData(response.data);
+      });
   }, [params.code]);
 
   const autoColumns = React.useMemo(
@@ -114,12 +99,15 @@ const Station: React.FC = () => {
 
   return (
     <>
-      <h1>Estação Automatica de Cruz das Almas</h1>
-      <TableContainer
-        columns={params.type === 'Convencional' ? convColumns : autoColumns}
-        data={stationData}
-      />
-      {NetError && <h3>NetError</h3>}
+      <Title>
+        {`Estação ${params.type} de ${params.name.toLocaleLowerCase()}`}
+      </Title>
+      <Container style={{ marginTop: 50 }}>
+        <TableContainer
+          columns={params.type === 'Convencional' ? convColumns : autoColumns}
+          data={stationData}
+        />
+      </Container>
     </>
   );
 };
