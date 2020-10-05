@@ -3,7 +3,9 @@
 
 <br>
 
-<img src="./assets/video.gif" alt="usage" width=600>
+<p style="text-align:center;">
+  <img src="./assets/video.gif" alt="usage" width=600>
+</p>
 
 ### To use
 
